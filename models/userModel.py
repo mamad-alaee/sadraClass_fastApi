@@ -3,7 +3,6 @@ from mongoengine import Document,StringField,EmailField
 
 
 
-
 class User(Document):
     firstName = StringField(min_length=3, max_length=50)
     lastName = StringField(min_length=3, max_length=50)
@@ -13,6 +12,6 @@ class User(Document):
     
     
     
+
     
-    
-    
+

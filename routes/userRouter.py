@@ -1,14 +1,14 @@
-from fastapi import APIRouter,Form,HTTPException
+from fastapi import APIRouter,Form,HTTPException,Header,Request
 from validators.userValidator import UserValidator
-from services.userServices import saveUserService,getAllUsersService,getUserByIdService,deleteUserByIdService
-
+from services.userServices import checkUserForLoginService,saveUserService,getAllUsersService,getUserByIdService,deleteUserByIdService
+from init.loggerSetup import app_logger
 
 userRouter = APIRouter()
 
 
 @userRouter.get('/users')
-def getALLUsers():
-    servicesResponse = getAllUsersService()
+def getALLUsers(page:int=1,limit:int=10):
+    servicesResponse = getAllUsersService(page,limit)
     if servicesResponse is False:
         raise HTTPException(status_code=404, detail="No users found")
     else:
@@ -45,10 +45,37 @@ def updateUser(id: int):
     pass
 
 @userRouter.delete('/users/{id}')
-def deleteUser(id: str):
-    serverResponse = deleteUserByIdService(id)
-    if serverResponse is False:
-        raise HTTPException(status_code=404, detail="User not found")
+def deleteUser(id: str,authorization: str = Header(None)):
+    if authorization is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     else:
-        return {"message": "User deleted successfully"}
+        serverResponse = deleteUserByIdService(id)
+        if serverResponse is False:
+            raise HTTPException(status_code=404, detail="User not found")
+        else:
+            return {"message": "User deleted successfully"}
         
+
+
+@userRouter.post('/login')
+def loginUser(
+        grant_type: str = Form(...),
+        username: str = Form(...),
+        password: str = Form(...)
+):
+    bodyMessage,statusCode = checkUserForLoginService(grant_type,username, password)
+    raise HTTPException(status_code=statusCode, detail=bodyMessage)
+
+
+
+@userRouter.get('/user_error')
+def getUserError():
+    try:
+        x = 2 + 2
+        raise Exception("Some error occurred")
+    except Exception as e:
+        error_log_data = {
+            "request":str(Request),
+            "error":str(e),
+        }
+        app_logger.error(error_log_data)

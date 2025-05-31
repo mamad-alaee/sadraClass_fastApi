@@ -5,3 +5,4 @@ email-validator
 mongoengine
 python-dotenv
 pydantic-settings
+python-jose[cryptography]

@@ -1,0 +1,2 @@
+2025-05-31 09:52:53.183 | ERROR    | routes.userRouter:getUserError:77 - Some error occurred
+2025-05-31 09:55:31.861 | ERROR    | routes.userRouter:getUserError:81 - {'request': "<class 'starlette.requests.Request'>", 'error': 'Some error occurred'}
